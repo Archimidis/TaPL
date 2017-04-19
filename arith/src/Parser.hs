@@ -1,6 +1,8 @@
-module Parser where
+module Parser
+  ( parseArith
+  ) where
 
-{-import Control.Applicative ((<$>))-}
+import Data.Functor.Identity (Identity)
 import Text.Parsec
 import Text.Parsec.String (Parser)
 
@@ -11,7 +13,18 @@ import Lexer
 import Syntax
 
 expr :: Parser Term
-expr = Ex.buildExpressionParser [] factor
+expr = Ex.buildExpressionParser opTable factor
+
+prefix :: String -> (a -> a) -> Ex.Operator String () Identity a
+prefix name fun = Ex.Prefix ( reservedOp name >> return fun )
+
+opTable :: Ex.OperatorTable String () Identity Term
+opTable = [
+    [ prefix "succ" TmSucc
+    , prefix "pred" TmPred
+    , prefix "iszero" TmIsZero
+    ]
+  ]
 
 true :: Parser Term
 true = reserved "true" >> return TmTrue
@@ -21,24 +34,6 @@ false = reserved "false" >> return TmFalse
 
 zero :: Parser Term
 zero = reserved "0" >> return TmZero
-
-successor :: Parser Term
-successor = do
-  reserved "succ"
-  t <- expr
-  return $ TmSucc t
-
-predecessor :: Parser Term
-predecessor = do
-  reserved "pred"
-  t <- expr
-  return $ TmPred t
-
-isZero :: Parser Term
-isZero = do
-  reserved "iszero"
-  t <- expr
-  return $ TmIsZero t
 
 ifThenElse :: Parser Term
 ifThenElse = do
@@ -54,10 +49,7 @@ factor :: Parser Term
 factor =  true
       <|> false
       <|> zero
-      <|> successor
-      <|> predecessor
-      <|> try isZero
-      <|> try ifThenElse
+      <|> ifThenElse
       <|> parens expr
 
 contents :: Parser a -> Parser a

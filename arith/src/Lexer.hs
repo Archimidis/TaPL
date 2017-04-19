@@ -9,8 +9,8 @@ lexer :: Tok.TokenParser ()
 lexer =
   Tok.makeTokenParser
     emptyDef
-    { Tok.reservedNames =
-        ["true", "false", "0", "succ", "pred", "iszero", "if", "then", "else"]
+    { Tok.reservedNames = ["true", "false", "if", "then", "else"]
+    , Tok.reservedOpNames = ["0", "succ", "pred", "iszero"]
     }
 
 parens :: Parser a -> Parser a
@@ -21,3 +21,6 @@ whiteSpace = Tok.whiteSpace lexer
 
 reserved :: String -> Parser ()
 reserved = Tok.reserved lexer
+
+reservedOp :: String -> Parser ()
+reservedOp = Tok.reservedOp lexer
