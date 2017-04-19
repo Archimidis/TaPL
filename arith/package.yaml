@@ -31,6 +31,9 @@ executables:
     dependencies:
     - base
     - arith
+    - parsec
+    - pretty
+    - haskeline
     ghc-options:
     - -rtsopts
     - -threaded
