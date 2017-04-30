@@ -1,0 +1,66 @@
+# This YAML file describes your package. Stack will automatically generate a
+# Cabal file when you run `stack build`. See the hpack website for help with
+# this file: <https://github.com/sol/hpack>.
+name: untypedlambda
+synopsis: A new haskell project.
+description: untypedlambda is a new haskell project.
+version: '0.1.0'
+category: Other
+maintainer: Nikolas Vourlakis
+github: Archimidis/untypedlambda
+license: MIT
+library:
+  source-dirs: src
+  dependencies:
+  - base
+
+extra-source-files:
+- CHANGELOG.md
+- LICENSE.md
+- package.yaml
+- README.md
+- stack.yaml
+
+ghc-options: -Wall
+
+executables:
+  untypedlambda:
+    source-dirs: app
+    main: Main.hs
+    dependencies:
+    - base
+    - untypedlambda
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+
+tests:
+  untypedlambda-test-suite:
+    source-dirs: test
+    main: Main.hs
+    dependencies:
+    - base
+    - untypedlambda
+    - HUnit
+    - QuickCheck
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+
+benchmarks:
+  untypedlambda-benchmarks:
+    source-dirs: benchmark
+    main: Main.hs
+    dependencies:
+    - base
+    - untypedlambda
+    - criterion
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
