@@ -20,4 +20,10 @@ testParse :: (String, Term) -> Assertion
 testParse (input, expected) = parseUntypedLambda input @?= Right expected
 
 validExamplesForParse :: [(String, Term)]
-validExamplesForParse = []
+validExamplesForParse =
+  [ ("x", TmVar 0 0)
+  , ("y", TmVar 0 0)
+
+  , ("λy.y", TmAbs "y" (TmVar 0 0))
+  , ("λx.x", TmAbs "x" (TmVar 0 0))
+  ]
