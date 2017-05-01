@@ -2,7 +2,7 @@ module Main where
 
 import Test.Tasty (defaultMain, testGroup)
 
-import ExampleSpec
+import ParserSpec
 
 main :: IO ()
-main = defaultMain $ testGroup "Tests" [ ExampleSpec.tests ]
+main = defaultMain $ testGroup "Tests" [ ParserSpec.tests ]
