@@ -1,28 +1,45 @@
 module Parser where
 
-import Data.Functor.Identity (Identity)
 import Text.Parsec
 
-import qualified Text.Parsec.Expr as Ex
-import qualified Text.Parsec.Token as Tok
+import Data.List (elemIndices)
 
-import Lexer
 import Syntax
 
-type Context = [String]
+type Context = String
 
 type LCParser = Parsec String Context Term
 
-var :: LCParser
-var = letter >> return (TmVar 0 0)
+parens :: Parsec String u a -> Parsec String u a
+parens = between (char '(') (char ')')
+
+nameToIndex :: Char -> Context -> Int
+nameToIndex param context =
+  let indices = elemIndices param context
+  in if null indices
+       then 0
+       else last indices
+
+lambdaVar :: LCParser
+lambdaVar =
+  letter >>= \param ->
+    getState >>= \context -> return $ TmVar (nameToIndex param context) 0
 
 lambdaAbs :: LCParser
 lambdaAbs =
   string "λ" >> letter >>= \param ->
-    char '.' >> var >>= \expr -> return (TmAbs [param] expr)
+    char '.' >> modifyState (param :) >> lambdaExpr >>= \t1 ->
+      modifyState tail >> return (TmAbs [param] t1)
 
-expr :: LCParser
-expr = lambdaAbs <|> var
+lambdaApp :: LCParser
+lambdaApp =
+  noAppExpr >>= \t1 -> space >> noAppExpr >>= \t2 -> return $ TmApp t1 t2
+
+noAppExpr :: LCParser
+noAppExpr = parens lambdaExpr <|> lambdaAbs <|> lambdaVar
+
+lambdaExpr :: LCParser
+lambdaExpr = chainl1 noAppExpr (space >> return TmApp)
 
 contents :: Parsec String Context a -> Parsec String Context a
 contents p = do
@@ -31,4 +48,4 @@ contents p = do
   return r
 
 parseUntypedLambda :: String -> Either ParseError Term
-parseUntypedLambda = runParser (contents expr) [] "<stdin>"
+parseUntypedLambda = runParser (contents lambdaExpr) [] "<stdin>"

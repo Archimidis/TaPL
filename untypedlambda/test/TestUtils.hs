@@ -1,15 +1,17 @@
-module TestUtils (
-   testWithProvider
-) where
+module TestUtils
+  ( testWithProvider
+  ) where
 
+import Test.HUnit (Assertion)
 import Test.Tasty (TestTree, testGroup, TestName)
 import Test.Tasty.HUnit (testCase)
-import Test.HUnit (Assertion)
+import Text.Printf (PrintfArg, printf)
 
-testWithProvider :: TestName -> (a -> Assertion) -> [a] -> TestTree
+testWithProvider
+  :: PrintfArg t1
+  => TestName -> ((t1, t) -> Assertion) -> [(t1, t)] -> TestTree
 testWithProvider testGroupName testFunction =
-    testGroup testGroupName . map createTest . zipWith assignName [1::Int ..]
-    where
-        createTest (name, dataSet) = testCase name $ testFunction dataSet
-        assignName setNumber dataSet = ("Data set " ++ show setNumber, dataSet)
-
+  testGroup testGroupName . map createTest
+  where
+    createTest dataSet@(input, _) =
+      testCase (printf "%s" input) (testFunction dataSet)
