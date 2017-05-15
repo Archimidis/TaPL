@@ -6,6 +6,16 @@ import Data.List (elemIndices)
 
 import Syntax
 
+{--
+ - A context is a list of variables bound in a lambda abstraction and it works
+ - just like a stack. For each nested lambda abstraction, its variable is pushed
+ - in the front of the context.
+ - For example, given the function "λx.λy.x", when both "λx" and "λy" are
+ - already parsed and the variable "x" is left, then the current context will be
+ - ['y', 'x'].
+ - When getting out of the nested abstractions, then the terms are popped from
+ - the context.
+ -}
 type Context = String
 
 type LCParser = Parsec String Context Term
@@ -13,6 +23,10 @@ type LCParser = Parsec String Context Term
 parens :: Parsec String u a -> Parsec String u a
 parens = between (char '(') (char ')')
 
+{--
+ - This function computes the de Bruijn index of a bound variable based on its
+ - current context.
+ -}
 nameToIndex :: Char -> Context -> Int
 nameToIndex param context =
   let indices = elemIndices param context
@@ -23,7 +37,7 @@ nameToIndex param context =
 lambdaVar :: LCParser
 lambdaVar =
   letter >>= \param ->
-    getState >>= \context -> return $ TmVar (nameToIndex param context) (length context) 
+    getState >>= \context -> return $ TmVar (nameToIndex param context) (length context)
 
 lambdaAbs :: LCParser
 lambdaAbs =
