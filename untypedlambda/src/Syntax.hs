@@ -7,4 +7,5 @@ type ContextTotalLength = Int
 data Term = TmVar Index ContextTotalLength
           | TmAbs Name Term
           | TmApp Term Term
+          | TmWrong
   deriving (Show, Eq)

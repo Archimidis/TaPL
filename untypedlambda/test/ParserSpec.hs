@@ -23,6 +23,10 @@ tests =
         testSuccessfulParse
         sameAppWithDifferentParenthesis
     , testWithProvider "parse Y combinator" testSuccessfulParse yCombinator
+    , testWithProvider
+        "parse expressions used in evaluation tests"
+        testSuccessfulParse
+        expressionsUsedInEvaluation
     ]
 
 testSuccessfulParse :: (String, Term) -> Assertion
@@ -58,6 +62,12 @@ validExamplesForParse =
                  (TmApp
                     (TmApp (TmVar 3 4) (TmVar 1 4))
                     (TmApp (TmApp (TmVar 2 4) (TmVar 0 4)) (TmVar 1 4)))))))
+  ]
+
+expressionsUsedInEvaluation :: [(String, Term)]
+expressionsUsedInEvaluation =
+  [ ( "(λx.λy.x) (λx.x)"
+    , TmApp (TmAbs "x" (TmAbs "y" (TmVar 1 2))) (TmAbs "x" (TmVar 0 1)))
   ]
 
 -- Testing same application expression inside abstraction with parenthesis in
