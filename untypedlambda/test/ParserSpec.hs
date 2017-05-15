@@ -33,19 +33,19 @@ validExamplesForParse :: [(String, Term)]
 validExamplesForParse =
   [ ("x", TmVar 0 0) -- XXX: should throw error
   , ("y", TmVar 0 0) -- XXX: should throw error
-  , ("λy.y", TmAbs "y" (TmVar 0 0))
-  , ("λx.x", TmAbs "x" (TmVar 0 0))
-  , ("λx.λy.x", TmAbs "x" (TmAbs "y" (TmVar 1 0)))
-  , ("λx.λx.x", TmAbs "x" (TmAbs "x" (TmVar 1 0)))
-  , ("λy.λx.x", TmAbs "y" (TmAbs "x" (TmVar 0 0)))
-  , ("(λx.x) (λx.x)", TmApp (TmAbs "x" (TmVar 0 0)) (TmAbs "x" (TmVar 0 0)))
-  , ("λx.λy.(x y)", TmAbs "x" (TmAbs "y" (TmApp (TmVar 1 0) (TmVar 0 0))))
+  , ("λy.y", TmAbs "y" (TmVar 0 1))
+  , ("λx.x", TmAbs "x" (TmVar 0 1))
+  , ("λx.λy.x", TmAbs "x" (TmAbs "y" (TmVar 1 2)))
+  , ("λx.λx.x", TmAbs "x" (TmAbs "x" (TmVar 1 2)))
+  , ("λy.λx.x", TmAbs "y" (TmAbs "x" (TmVar 0 2)))
+  , ("(λx.x) (λx.x)", TmApp (TmAbs "x" (TmVar 0 1)) (TmAbs "x" (TmVar 0 1)))
+  , ("λx.λy.(x y)", TmAbs "x" (TmAbs "y" (TmApp (TmVar 1 2) (TmVar 0 2))))
   , ( "λx.λy.x (y x)"
-    , TmAbs "x" (TmAbs "y" (TmApp (TmVar 1 0) (TmApp (TmVar 0 0) (TmVar 1 0)))))
+    , TmAbs "x" (TmAbs "y" (TmApp (TmVar 1 2) (TmApp (TmVar 0 2) (TmVar 1 2)))))
   , ( "λs.λz.s (s z)"
-    , TmAbs "s" (TmAbs "z" (TmApp (TmVar 1 0) (TmApp (TmVar 1 0) (TmVar 0 0)))))
+    , TmAbs "s" (TmAbs "z" (TmApp (TmVar 1 2) (TmApp (TmVar 1 2) (TmVar 0 2)))))
   , ( "(λx.(λx.x)) (λx.x)"
-    , TmApp (TmAbs "x" (TmAbs "x" (TmVar 1 0))) (TmAbs "x" (TmVar 0 0)))
+    , TmApp (TmAbs "x" (TmAbs "x" (TmVar 1 2))) (TmAbs "x" (TmVar 0 1)))
   , ( "λm.λn.λs.λz.m s (n z s)"
     , TmAbs
         "m"
@@ -56,18 +56,18 @@ validExamplesForParse =
               (TmAbs
                  "z"
                  (TmApp
-                    (TmApp (TmVar 3 0) (TmVar 1 0))
-                    (TmApp (TmApp (TmVar 2 0) (TmVar 0 0)) (TmVar 1 0)))))))
+                    (TmApp (TmVar 3 4) (TmVar 1 4))
+                    (TmApp (TmApp (TmVar 2 4) (TmVar 0 4)) (TmVar 1 4)))))))
   ]
 
 -- Testing same application expression inside abstraction with parenthesis in
 -- different locations
 sameAppWithDifferentParenthesis :: [(String, Term)]
 sameAppWithDifferentParenthesis =
-  [ ("λx.(x (λx.x))", TmAbs "x" (TmApp (TmVar 0 0) (TmAbs "x" (TmVar 1 0))))
-  , ("λx.(x λx.x)", TmAbs "x" (TmApp (TmVar 0 0) (TmAbs "x" (TmVar 1 0))))
-  , ("λx.x (λx.x)", TmAbs "x" (TmApp (TmVar 0 0) (TmAbs "x" (TmVar 1 0))))
-  , ("λx.x λx.x", TmAbs "x" (TmApp (TmVar 0 0) (TmAbs "x" (TmVar 1 0))))
+  [ ("λx.(x (λx.x))", TmAbs "x" (TmApp (TmVar 0 1) (TmAbs "x" (TmVar 1 2))))
+  , ("λx.(x λx.x)", TmAbs "x" (TmApp (TmVar 0 1) (TmAbs "x" (TmVar 1 2))))
+  , ("λx.x (λx.x)", TmAbs "x" (TmApp (TmVar 0 1) (TmAbs "x" (TmVar 1 2))))
+  , ("λx.x λx.x", TmAbs "x" (TmApp (TmVar 0 1) (TmAbs "x" (TmVar 1 2))))
   ]
 
 yCombinator :: [(String, Term)]
@@ -76,8 +76,8 @@ yCombinator =
     , TmAbs
         "f"
         (TmApp
-           (TmAbs "x" (TmApp (TmVar 1 0) (TmApp (TmVar 0 0) (TmVar 0 0))))
-           (TmAbs "x" (TmApp (TmVar 1 0) (TmApp (TmVar 0 0) (TmVar 0 0))))))
+           (TmAbs "x" (TmApp (TmVar 1 2) (TmApp (TmVar 0 2) (TmVar 0 2))))
+           (TmAbs "x" (TmApp (TmVar 1 2) (TmApp (TmVar 0 2) (TmVar 0 2))))))
   , ( "λf.(λx.f (λu.x x u)) (λx.f (λu.x x u))" -- Y combinator (call-by-value)
     , TmAbs
         "f"
@@ -85,11 +85,11 @@ yCombinator =
            (TmAbs
               "x"
               (TmApp
-                 (TmVar 1 0)
-                 (TmAbs "u" (TmApp (TmApp (TmVar 1 0) (TmVar 1 0)) (TmVar 0 0)))))
+                 (TmVar 1 2)
+                 (TmAbs "u" (TmApp (TmApp (TmVar 1 3) (TmVar 1 3)) (TmVar 0 3)))))
            (TmAbs
               "x"
               (TmApp
-                 (TmVar 1 0)
-                 (TmAbs "u" (TmApp (TmApp (TmVar 1 0) (TmVar 1 0)) (TmVar 0 0)))))))
+                 (TmVar 1 2)
+                 (TmAbs "u" (TmApp (TmApp (TmVar 1 3) (TmVar 1 3)) (TmVar 0 3)))))))
   ]

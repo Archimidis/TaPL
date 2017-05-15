@@ -23,7 +23,7 @@ nameToIndex param context =
 lambdaVar :: LCParser
 lambdaVar =
   letter >>= \param ->
-    getState >>= \context -> return $ TmVar (nameToIndex param context) 0
+    getState >>= \context -> return $ TmVar (nameToIndex param context) (length context) 
 
 lambdaAbs :: LCParser
 lambdaAbs =
