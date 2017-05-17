@@ -31,6 +31,8 @@ executables:
     dependencies:
     - base
     - untypedlambda
+    - parsec
+    - haskeline
     ghc-options:
     - -rtsopts
     - -threaded
