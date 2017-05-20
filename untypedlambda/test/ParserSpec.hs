@@ -7,8 +7,8 @@ import Test.Tasty.HUnit (Assertion, (@?=))
 
 import TestUtils (testWithProvider)
 
-import Parser
-import Syntax
+import Parser (parseUntypedLambda)
+import Syntax (Term(..))
 
 tests :: TestTree
 tests =

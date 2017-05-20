@@ -1,10 +1,11 @@
-module Parser where
-
-import Text.Parsec
+module Parser
+  ( parseUntypedLambda
+  ) where
 
 import Data.List (elemIndices)
+import Text.Parsec
 
-import Syntax
+import Syntax (Term(..))
 
 {--
  - A context is a list of variables bound in a lambda abstraction and it works
@@ -37,17 +38,14 @@ nameToIndex param context =
 lambdaVar :: LCParser
 lambdaVar =
   letter >>= \param ->
-    getState >>= \context -> return $ TmVar (nameToIndex param context) (length context)
+    getState >>= \context ->
+      return $ TmVar (nameToIndex param context) (length context)
 
 lambdaAbs :: LCParser
 lambdaAbs =
   string "λ" >> letter >>= \param ->
     char '.' >> modifyState (param :) >> lambdaExpr >>= \t1 ->
       modifyState tail >> return (TmAbs [param] t1)
-
-lambdaApp :: LCParser
-lambdaApp =
-  noAppExpr >>= \t1 -> space >> noAppExpr >>= \t2 -> return $ TmApp t1 t2
 
 noAppExpr :: LCParser
 noAppExpr = parens lambdaExpr <|> lambdaAbs <|> lambdaVar
