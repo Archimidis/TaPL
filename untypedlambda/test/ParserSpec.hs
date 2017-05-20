@@ -62,6 +62,14 @@ validExamplesForParse =
                  (TmApp
                     (TmApp (TmVar 3 4) (TmVar 1 4))
                     (TmApp (TmApp (TmVar 2 4) (TmVar 0 4)) (TmVar 1 4)))))))
+  , ( "λx.λx.λx.λx.λx.λx.λx.x"
+    , TmAbs
+        "x"
+        (TmAbs
+           "x"
+           (TmAbs
+              "x"
+              (TmAbs "x" (TmAbs "x" (TmAbs "x" (TmAbs "x" (TmVar 6 7))))))))
   ]
 
 expressionsUsedInEvaluation :: [(String, Term)]
