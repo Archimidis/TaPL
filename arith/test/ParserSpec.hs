@@ -2,17 +2,31 @@ module ParserSpec
   ( tests
   ) where
 
+import Hedgehog
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, (@?=))
+import Test.Tasty.Hedgehog (testProperty)
 
+import Gens (genValidExpr)
 import TestUtils (testWithProvider)
 
-import Parser
+import Parser (parseArith)
+import Pretty (renderExpression)
 import Syntax
 
 tests :: TestTree
 tests =
-  testGroup "Parser" [testWithProvider "parseArith" testParse validExamplesForParse]
+  testGroup
+    "Parser"
+    [ testProperty "expression round trip" prop_expr_round_trip
+    , testWithProvider "parseArith" testParse validExamplesForParse
+    ]
+
+prop_expr_round_trip :: Property
+prop_expr_round_trip =
+  property $ do
+    expr <- forAll genValidExpr
+    tripping expr renderExpression parseArith
 
 testParse :: (String, Term) -> Assertion
 testParse (input, expected) = parseArith input @?= Right expected
