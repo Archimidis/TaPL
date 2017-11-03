@@ -1,18 +1,40 @@
-module CoreSpec (tests) where
+module CoreSpec
+  ( tests
+  ) where
 
+import Hedgehog
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
+import Test.Tasty.Hedgehog (testProperty)
 
-import Syntax
+import Gens (genValidExpr)
+
 import Core
+import Syntax
 
 tests :: TestTree
-tests = testGroup "Core"
-  [ evaluateOneStepUnits
-  , evalUnits
-  , evaluateBigStepUnits
-  , evalbUnits
-  ]
+tests =
+  testGroup
+    "Core"
+    [ testProperty "eval1 idempotent" prop_eval1_idempotent
+    , testProperty "evalb idempotent" prop_evalb_idempotent
+    , evaluateOneStepUnits
+    , evalUnits
+    , evaluateBigStepUnits
+    , evalbUnits
+    ]
+
+prop_eval1_idempotent :: Property
+prop_eval1_idempotent =
+  property $ do
+    expr <- forAll genValidExpr
+    eval1 (eval1 expr) === eval1 expr
+
+prop_evalb_idempotent :: Property
+prop_evalb_idempotent =
+  property $ do
+    expr <- forAll genValidExpr
+    evalb (evalb expr) === evalb expr
 
 evaluateOneStepUnits :: TestTree
 evaluateOneStepUnits = testGroup "evaluateOneStep"
