@@ -15,6 +15,7 @@ printTerm expr =
       text "then" <+> lparen <> printTerm e2 <> rparen <+>
       text "else" <+> lparen <> printTerm e3 <> rparen
     TmZero -> text "0"
+    TmSucc TmZero -> text "succ 0"
     TmSucc e -> text "succ" <+> lparen <> printTerm e <> rparen
     TmPred e -> text "pred" <+> lparen <> printTerm e <> rparen
     TmIsZero e -> text "iszero" <+> lparen <> printTerm e <> rparen
