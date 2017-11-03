@@ -33,7 +33,6 @@ executables:
     - base
     - arith
     - parsec
-    - pretty
     - haskeline
     ghc-options:
     - -rtsopts
@@ -48,25 +47,10 @@ tests:
     - base
     - arith
     - HUnit
-    - QuickCheck
     - tasty
     - tasty-hunit
-    - tasty-quickcheck
     - hedgehog
     - tasty-hedgehog
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-
-benchmarks:
-  arith-benchmarks:
-    source-dirs: benchmark
-    main: Main.hs
-    dependencies:
-    - base
-    - arith
-    - criterion
     ghc-options:
     - -rtsopts
     - -threaded
